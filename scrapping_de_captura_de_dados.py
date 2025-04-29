@@ -1,10 +1,7 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC #[01] - ***Definição das bibliotecas necessárias***
 
-# COMMAND ----------
+#[01] - ***Definição das bibliotecas necessárias***
 
-# MAGIC %pip install openpyxl google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client gspread drive pandas_gbq gspread_dataframe -q
+%pip install openpyxl google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client gspread drive pandas_gbq gspread_dataframe -q
 
 # COMMAND ----------
 
@@ -12,8 +9,7 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC #[02] - ***Integração com o google Drive***
+#[02] - ***Integração com o google Drive***
 
 # COMMAND ----------
 
@@ -34,7 +30,7 @@ SCOPES = [
 ]
 
 # Caminho para o arquivo JSON da conta de serviço
-SERVICE_ACCOUNT_FILE = '/Workspace/Users/julio.silva@grupobrisanet.com.br/gsa_dados_drive.json'
+SERVICE_ACCOUNT_FILE = 'service_account_drive'
 
 # COMMAND ----------
 
@@ -46,21 +42,18 @@ client = gspread.authorize(credentials)
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC #[03] - ***Integração sistema TIFLUX - Requisição POST de login***
+#[03] - ***Integração sistema TIFLUX - Requisição POST de login***
 
 # COMMAND ----------
 
-# Login Tiflux
+# credenciais secrets sistema
 
 login    = dbutils.secrets.get(scope='JCtiflux', key='logintiflux')
 password = dbutils.secrets.get(scope='JCtiflux', key='senhatiflux')
 
-
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC ##***Geração de Token tmp - token de início de seção [login 01]***
+##***Geração de Token tmp - token de início de seção [login 01]***
 
 # COMMAND ----------
 
@@ -82,7 +75,7 @@ def login_tiflux(email, password):
         },
     }
 
-    response = requests.post('https://app.tiflux.com/users/sign_in.json', headers=headers, json=json_data)
+    response = requests.post('url_de_post', headers=headers, json=json_data)
     
     if response.status_code == 200:
         return response.json()
@@ -92,78 +85,41 @@ def login_tiflux(email, password):
 
 # Chamada da função 
 response_data = login_tiflux(login, password)
-
-
-# COMMAND ----------
-
 cod_tmp = response_data['otp_tmp']
-print(cod_tmp)
 
-# COMMAND ----------
+##***Captura de código otp via g-mail API [login 02]***
+    # Encaminhamento de preenchimento automático para a planilha mestra de forma acionar o script
+    # Captura do código otp via Java Script
+    # Usar o ID da planilha em vez do nome
 
-# MAGIC %md
-# MAGIC ##***Captura de código otp via g-mail API [login 02]***
-# MAGIC
-# MAGIC - Encaminhamento de preenchimento automático para a planilha mestra de forma acionar o script
-# MAGIC - Captura do código otp via Java Script
-
-# COMMAND ----------
-
-# Usar o ID da planilha em vez do nome
-spreadsheet_id = '1KOJSp29JQRp-B32g7eALldPlDOTLqklQabwdASYvl80'
+spreadsheet_id = 'id_planilha_google'
 spreadsheet = client.open_by_key(spreadsheet_id)
-
 worksheet = spreadsheet.worksheet("Emails")
 
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ###***Criação de gatilho de acionamento para o APP Script***
+###***Criação de gatilho de acionamento para o APP Script***
 
 # COMMAND ----------
 
-data = {'TAG':['OI lezado, atualize aí'],'Nome':['Júlio']}
+data = {'TAG':['gatilho de atualização, atualize aí'],'Nome':['Júlio']}
 gatilho = pd.DataFrame(data)
 
 # COMMAND ----------
-
-
 from gspread_dataframe import set_with_dataframe
-
 set_with_dataframe(worksheet, gatilho)
 
-print('Disparo de gatilho de execução encaminhado!')
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ###***Integração com planilha no drive e captura do Código [otp]***
-
-# COMMAND ----------
+###***Integração com planilha no drive e captura do Código [otp]***
 
 import time
 sleep(15)
 # Ler dados da worksheet
 data = worksheet.get_all_values()
-
 # Converter a lista de dicionários em um DataFrame
 ss = pd.DataFrame(data[1:], columns=data[0])
-ss
-
-# COMMAND ----------
-
 codigo_otp = ss['Código de Segurança'].iloc[0]
-print(codigo_otp)
 
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ***IMPLEMENTAÇÃO DOS CÓDIGOS NA API SECUNDÁRIA DE VERIFICAÇÃO***
-
-# COMMAND ----------
+# ***IMPLEMENTAÇÃO DOS CÓDIGOS NA API SECUNDÁRIA DE VERIFICAÇÃO***
 
 sleep(15)
-
 import requests
 
 headers = {
@@ -174,43 +130,24 @@ headers = {
 }
 
 json_data = {
-    'email': 'julio.silva@grupobrisanet.com.br',
+    'email': 'meu_email',
     'otp_tmp': f'{cod_tmp}',
     'otp': f'{codigo_otp}',
 }
 
-response1 = requests.post('https://app.tiflux.com/mfa/verify_otp.json', headers=headers, json=json_data)
+response1 = requests.post('requisição_de_post', headers=headers, json=json_data)
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC ***CAPTURA DO TOKEN DE AUTHORIZATION***
+# ***CAPTURA DO TOKEN DE AUTHORIZATION***
 
 # COMMAND ----------
 
 token_relatorio = response1.headers['authorization']
-print(token_relatorio)
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC ***Realização do Login***
-
-# COMMAND ----------
-
-if response1.status_code == 200:
-    print(response1.json())
-    print('Login realizado com sucesso!')
-    
-else:
-    print('Erro no login:', response1.status_code, response1.json())
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ###***EXTRAÇÃO DOS RELATÓRIOS***
-
-# COMMAND ----------
+###***EXTRAÇÃO DOS RELATÓRIOS***
 
 #Criando o range de coleta
 
@@ -225,28 +162,11 @@ abertura = hoje - timedelta(days=180)
 hoje = hoje.strftime('%Y-%m-%d')
 abertura = abertura.strftime('%Y-%m-%d')
 
-# COMMAND ----------
-
-print(hoje)
+###***REQUISIÇÃO DE CAPTURA DOS DADOS***
 
 # COMMAND ----------
 
-print(abertura)
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ###***REQUISIÇÃO DE CAPTURA DOS DADOS***
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ***Criação de Captura do Token de Validação***
-
-# COMMAND ----------
-
-import requests
-import pandas as pd
+#***Criação de Captura do Token de Validação***
 
 # Definição do cabeçalho
 headers = {
@@ -282,7 +202,7 @@ while True:  # Loop infinito até que os dados retornem vazios
 
     # Faz a requisição
     response = requests.post(
-        'https://app.tiflux.com/service_desk/tickets/ticket_search.json',
+        'requisição_de_post_payload',
         headers=headers,
         json=json_data,
     )
@@ -317,19 +237,7 @@ if todos_os_tickets:
 else:
     print('Nenhum registro encontrado!')
 
-# Exibe as primeiras linhas do DataFrame
-df_tickets.head()
-
-
-
-# COMMAND ----------
-
-df_tickets.stage_name.unique()
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ***ENCAMINHAMENTO E TRANSFORMAÇÃO DOS DADOS***
+# ***ENCAMINHAMENTO E TRANSFORMAÇÃO DOS DADOS***
 
 # COMMAND ----------
 
@@ -341,7 +249,9 @@ import pytz
 if df_tickets.empty:
     print('Nenhum registro encontrado!')
 else:
-    df_tickets.rename(columns={'id': 'ID', 'ticket_number': 'Numero_Ticket', 'title':'Titulo_Ticket','requestor_email':'Email_Solicitante' ,'requestor_name':'Solicitante', 'stage_name': 'Etapa', 'created_at': 'Data_Abertura', 'solved_in_time': 'Data_Fechamento', 'desk_name':'Mesa', 'client_name':'Cliente','responsible_name':'Nome_Responsavel','status_name':'status_atual','stage_name':'Estagio'}, inplace=True)
+    df_tickets.rename(columns={'id': 'ID', 'ticket_number': 'Numero_Ticket', 'title':'Titulo_Ticket','requestor_email':'Email_Solicitante' ,'requestor_name':'Solicitante', 'stage_name': 'Etapa', 
+                               'created_at': 'Data_Abertura', 'solved_in_time': 'Data_Fechamento', 'desk_name':'Mesa', 'client_name':'Cliente','responsible_name':'Nome_Responsavel','status_name':'status_atual',
+                               'stage_name':'Estagio'}, inplace=True)
 
 
     df_tickets['Estagio'] = df_tickets['Estagio'].str.strip()
@@ -364,17 +274,14 @@ else:
     
     # Encaminhando a Tabela ao Bigquery
     import os
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "//Workspace/Users/julio.silva@grupobrisanet.com.br/credentials_service_account.json"
-    table_id = 'workspace-uge.OPERACOES.IAT_tickets_tiflux' 
-    project_id = 'workspace-uge'
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account"
+    table_id = 'tabela_bigquery' 
+    project_id = 'projeto_bigquery'
 
     df_tickets.to_gbq(destination_table=table_id, project_id=project_id, if_exists='replace')
 
     print(f'{table_id} enviada com Sucesso!')
 
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC ***REALIZAÇÃO DO LOGOUT***
 
 # COMMAND ----------
@@ -390,7 +297,7 @@ params = {
     'id': '670842',
 }
 
-response4 = requests.delete('https://app.tiflux.com/users/sign_out.json', params=params, headers=headers)
+response4 = requests.delete('requisição_delete_sesion', params=params, headers=headers)
 
 # COMMAND ----------
 
