@@ -85,14 +85,6 @@ Este projeto implementa uma solução de integração de dados com um sistema we
 ### 📝 Observações
 
 - Fluxo totalmente automatizado para integração e extração de dados.
-- Integração segura utilizando códigos OTP e Google Sheets.
-- Projetado para alta confiabilidade e escalabilidade.
-
----
-
-### 📝 Observações
-
-- Fluxo totalmente automatizado para integração e extração de dados.
 
 - Integração segura utilizando códigos OTP (Apis Interceptadas), App Script + google Sheets e API big query
 
