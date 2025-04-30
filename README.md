@@ -64,7 +64,7 @@ README do Projeto: Integração e Extração de Dados - Tiflux + Google Drive
 
 ---
 
-### 🗃️ Extração de Relatórios do Tiflux
+### 🗃️ Extração de Relatórios do sistema
 
 **🕒 Detalhes:**
 
