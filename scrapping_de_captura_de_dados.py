@@ -3,7 +3,7 @@
 
 %pip install openpyxl google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client gspread drive pandas_gbq gspread_dataframe -q
 
-dbutils.library.restartPython() -- Restart do Ambiente python no Databricks!
+dbutils.library.restartPython() # Restart do Ambiente python no Databricks!
 
 #[02] - ***Integração com o google Drive***
 
@@ -32,16 +32,12 @@ client = gspread.authorize(credentials)
 
 #[04] - ***Integração com o sistema WEB - Requisição POST de login***
 
--- credenciais secrets sistema
+# credenciais secrets sistema
 
 login    = dbutils.secrets.get(scope='JCtiflux', key='logintiflux')
 password = dbutils.secrets.get(scope='JCtiflux', key='senhatiflux')
 
-# COMMAND ----------
-
-##***Geração de Token tmp - token de início de seção [login 01]***
-
-# COMMAND ----------
+#[4.1] - ***Geração de Token tmp - token de início de seção [login 01]***
 
 # Função de criação de tokens tmp e otp
 
@@ -73,7 +69,7 @@ def login_tiflux(email, password):
 response_data = login_tiflux(login, password)
 cod_tmp = response_data['otp_tmp']
 
-##***Captura de código otp via g-mail API [login 02]***
+#[05] - ***Captura de código otp via g-mail API [login 02]***
     # Encaminhamento de preenchimento automático para a planilha mestra de forma acionar o script
     # Captura do código otp via Java Script
     # Usar o ID da planilha em vez do nome
@@ -82,28 +78,27 @@ spreadsheet_id = 'id_planilha_google'
 spreadsheet = client.open_by_key(spreadsheet_id)
 worksheet = spreadsheet.worksheet("Emails")
 
-###***Criação de gatilho de acionamento para o APP Script***
+#[06] - ***Criação de gatilho de acionamento para o APP Script***
 
-# COMMAND ----------
-
-data = {'TAG':['gatilho de atualização, atualize aí'],'Nome':['Júlio']}
+data = {'TAG':['gatilho de atualização'],'Nome':['Júlio']}
 gatilho = pd.DataFrame(data)
 
-# COMMAND ----------
+# Adicionando o gatilho na planilha google para execução do APP SCRIPT
 from gspread_dataframe import set_with_dataframe
 set_with_dataframe(worksheet, gatilho)
 
-###***Integração com planilha no drive e captura do Código [otp]***
+#[07] - ***Integração com planilha no drive e captura do Código [otp]***
 
 import time
 sleep(15)
 # Ler dados da worksheet
+
 data = worksheet.get_all_values()
 # Converter a lista de dicionários em um DataFrame
 ss = pd.DataFrame(data[1:], columns=data[0])
 codigo_otp = ss['Código de Segurança'].iloc[0]
 
-# ***IMPLEMENTAÇÃO DOS CÓDIGOS NA API SECUNDÁRIA DE VERIFICAÇÃO***
+#[08] -  ***IMPLEMENTAÇÃO DOS CÓDIGOS NA API SECUNDÁRIA DE VERIFICAÇÃO***
 
 sleep(15)
 import requests
@@ -123,17 +118,12 @@ json_data = {
 
 response1 = requests.post('requisição_de_post', headers=headers, json=json_data)
 
-# COMMAND ----------
-
-# ***CAPTURA DO TOKEN DE AUTHORIZATION***
-
-# COMMAND ----------
+#[09] - ***CAPTURA DO TOKEN DE AUTHORIZATION***
 
 token_relatorio = response1.headers['authorization']
 
-# COMMAND ----------
 
-###***EXTRAÇÃO DOS RELATÓRIOS***
+#[10] - ***EXTRAÇÃO DOS RELATÓRIOS***
 
 #Criando o range de coleta
 
@@ -142,17 +132,12 @@ hoje = pd.to_datetime(datetime.now().date()) # Data de Hoje
 # Calcular o range de coleta
 
 abertura = hoje - timedelta(days=180)
-
-# COMMAND ----------
-
 hoje = hoje.strftime('%Y-%m-%d')
 abertura = abertura.strftime('%Y-%m-%d')
 
-###***REQUISIÇÃO DE CAPTURA DOS DADOS***
+#[11] - ***REQUISIÇÃO DE CAPTURA DOS DADOS***
 
-# COMMAND ----------
-
-#***Criação de Captura do Token de Validação***
+# ***Criação de Captura do Token de Validação***
 
 # Definição do cabeçalho
 headers = {
@@ -223,14 +208,10 @@ if todos_os_tickets:
 else:
     print('Nenhum registro encontrado!')
 
-# ***ENCAMINHAMENTO E TRANSFORMAÇÃO DOS DADOS***
-
-# COMMAND ----------
+#[12] - ***ENCAMINHAMENTO E TRANSFORMAÇÃO DOS DADOS***
 
 from datetime import datetime
 import pytz
-
-# COMMAND ----------
 
 if df_tickets.empty:
     print('Nenhum registro encontrado!')
@@ -268,9 +249,7 @@ else:
 
     print(f'{table_id} enviada com Sucesso!')
 
-# MAGIC ***REALIZAÇÃO DO LOGOUT***
-
-# COMMAND ----------
+#[13] - ***REALIZAÇÃO DO LOGOUT AUTOMÁTICO NO SISTEMA***
 
 import requests
 headers = {
@@ -284,8 +263,6 @@ params = {
 }
 
 response4 = requests.delete('requisição_delete_sesion', params=params, headers=headers)
-
-# COMMAND ----------
 
 if response4.status_code == 204:
     print('Logout realizado com sucesso!')
