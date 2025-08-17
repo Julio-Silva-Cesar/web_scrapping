@@ -3,15 +3,9 @@
 
 %pip install openpyxl google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client gspread drive pandas_gbq gspread_dataframe -q
 
-# COMMAND ----------
-
-dbutils.library.restartPython()
-
-# COMMAND ----------
+dbutils.library.restartPython() -- Restart do Ambiente python no Databricks!
 
 #[02] - ***Integração com o google Drive***
-
-# COMMAND ----------
 
 import pandas as pd
 from datetime import datetime
@@ -21,32 +15,24 @@ from google.oauth2.service_account import Credentials
 import drive
 from time import sleep
 
-# COMMAND ----------
-
-# Definir os escopos da API do Google Sheets e Google Drive
+#[03] - Definir os escopos da API do Google Sheets e Google Drive
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
 
-# Caminho para o arquivo JSON da conta de serviço
+#[3.1] - Caminho para o arquivo JSON da conta de serviço
 SERVICE_ACCOUNT_FILE = 'service_account_drive'
 
-# COMMAND ----------
-
-# Autenticar usando as credenciais da conta de serviço
+#[3.2] - Autenticar usando as credenciais da conta de serviço
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
-# Acessar a planilha usando gspread
+#[3.3] - Instanciamento do client do Drive
 client = gspread.authorize(credentials)
 
-# COMMAND ----------
+#[04] - ***Integração com o sistema WEB - Requisição POST de login***
 
-#[03] - ***Integração sistema TIFLUX - Requisição POST de login***
-
-# COMMAND ----------
-
-# credenciais secrets sistema
+-- credenciais secrets sistema
 
 login    = dbutils.secrets.get(scope='JCtiflux', key='logintiflux')
 password = dbutils.secrets.get(scope='JCtiflux', key='senhatiflux')
