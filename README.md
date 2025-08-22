@@ -2,7 +2,7 @@
 README do Projeto: Integração e Extração de Dados - Tiflux + Google Drive
 -->
 
-# Integração e Extração de Dados - Databricks + SISTEMA_WEB + Google Drive + Google Sheets + Bigquery
+# Integração e Extração de Dados - Databricks + SISTEMA_WEB + Google Drive + Apps Script + Bigquery
 
 ## 📑 Índice
 
