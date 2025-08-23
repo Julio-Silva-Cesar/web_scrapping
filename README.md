@@ -11,12 +11,12 @@ README do Projeto: Integração e Extração de Dados - Tiflux + Google Drive
 - [Bibliotecas Necessárias](#-bibliotecas-necessárias)
 - [Autenticação no Sistema WEB](#-Autenticação-no-sistema-WEB)
 - [Captura do Código OTP via Google Sheets e Apps Script](#-Captura-do-Código-OTP-via-Google-Sheets-e-Apps-Script)
-- [Captura do Código OTP](#-captura-do-código-otp)
-- [Validação da Sessão](#-validação-da-sessão)
-- [Extração de Relatórios do Sistema](#-extração-de-relatórios-do-sistema)
-- [Tratamento dos Dados](#-tratamento-dos-dados)
-- [Observações](#-observações)
-- [Autor](#-autor)
+- [Obtenção do Código OTP](#-Obtenção-do-Código-OTP)
+- [Login final e obtenção do token de seção](#-Login-final-e-obtenção-do-token-de-seção)
+- [Extração de relatórios do sistema](#-Extração-de-relatórios-do-sistema)
+- [Tratamento dos Dados](#-Tratamento-dos-Dados)
+- [Envio para o bigquery e logout](#-Envio-para-o-bigquery-e-logout)
+- [Contato](#-Contato)
 
 ---
 
@@ -74,13 +74,13 @@ Uma integração com o Google Drive e Google Sheets é ativada. Ao receber uma n
 *  Extrair o **código OTP** contido na mensagem.
 *  Gravar o código na planilha do Google Sheets para uso posterior.
 ---
-### 🛡️ Captura do Código OTP
+### 🛡️ Obtenção do Código OTP
 
 - Aguarda atualização da planilha.
 - Lê o código OTP de uma célula no Google Sheets via integração com o drive.
 ---
 
-### ✅ Login Final e Obtenção do Token de Seção
+### ✅ Login final e obtenção do token de seção
 
 Nesta etapa, fazemos uma requisição de login, utilizando os códigos capturados nas etapas anteriores como parâmetros:
 1.  O **código `tmp`**.
@@ -92,7 +92,7 @@ token = response.headers['authorization]
 ````
 ---
 
-### 🗃️ Extração de Relatórios do sistema
+### 🗃️ Extração de relatórios do sistema
 
 **🕒 Detalhes:**
 
@@ -110,7 +110,7 @@ token = response.headers['authorization]
 
 ---
 
-### 📝 Envio para o BigQuery e Logout
+### 📝 Envio para o bigquery e logout
 
 - Os dados tratados então são enviados para o BigQuery, atualizando o banco de dados.
 - Em seguida para garantir a segurança e liberar a sessão, uma requisição POST de logout é realizada automaticamente, encerrando o processo de execução do script e finalizando a automação.
