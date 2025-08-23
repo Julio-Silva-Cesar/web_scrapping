@@ -60,43 +60,45 @@ flowchart TD
 
 **📂 Passos:**
 
-- Importação das bibliotecas (`pandas`, `gspread`, `google-auth`, etc.)
-- Autenticação com `service_account_file`
-- Abertura da planilha pelo `spreadsheet_id`
-- Seleção da aba (worksheet) **"Emails"**
-
-### 🔐 Integração com Tiflux - Login e Autenticação
+O processo inicia com uma requisição POST para o sistema web. Nesta etapa, são capturados dois elementos cruciais:
+*  O **código temporário (`tmp`)**, um código alfanumérico necessário para a segunda parte do login.
+*  O disparo do envio de um **código OTP** (token de acesso de uso único) para o e-mail do usuário.
+---
+### 🔐 Captura do Código OTP via Google Sheets e Apps Script
 
 **🔄 Fluxo:**
-
-- Busca do login e senha no `dbutils.secrets`
-- Requisição `POST` para gerar o token temporário (`otp_tmp`)
-- Atualização automática da planilha no Drive para capturar o OTP
-
-``
-
+Uma integração com o Google Drive e Google Sheets é ativada. Ao receber uma notificação, um App Script é acionado para:
+*  Integrar com o e-mail do usuário.
+*  Ler o e-mail mais recente da notificação do token.
+*  Extrair o **código OTP** contido na mensagem.
+*  Gravar o código na planilha do Google Sheets para uso posterior.
+---
 ### 🛡️ Captura do Código OTP
 
 - Aguarda atualização da planilha
 - Lê o código OTP de uma célula no Google Sheets
-
 ---
 
-### ✅ Validação da Sessão
+### ✅ Login Final e Obtenção do Token de Seção
 
-- Autenticação final usando `otp_tmp` + `otp`
-- Captura do `authorization token` para autenticação nas APIs
-
+Nesta etapa, fazemos uma requisição de login, utilizando os códigos capturados nas etapas anteriores como parâmetros:
+1.  O **código `tmp`**.
+2.  O **código OTP**.
+3.  A requisição retorna o **token de autorização de sessão ativa**, que será utilizado para todas as interações futuras com a API do sistema.
+* O capturamos através dos headers da API, fazendo um response.headers['authorization], ação a qual exibirá o token, assim o armazenamentos em uma variável deixando-o dinâmico.
+```bash
+token = response.headers['authorization]
+````
 ---
 
 ### 🗃️ Extração de Relatórios do sistema
 
 **🕒 Detalhes:**
 
+- Com o token de autorização em mãos, o processo realiza chamadas à API do sistema para capturar os dados priorizados.
 - Define o período dos últimos 180 dias
 - Pagina os resultados de tickets (controle de `offset`)
 - Converte os dados para `DataFrame` com `pandas`
-
 ---
 
 ### 🛠️ Tratamento dos Dados
@@ -107,11 +109,11 @@ flowchart TD
 
 ---
 
-### 📝 Observações
+### 📝 Envio para o BigQuery e Logout
 
-- Fluxo totalmente automatizado para integração e extração de dados.
-
-- Integração segura utilizando códigos OTP (Apis Interceptadas), App Script + google Sheets e API big query
+- Os dados tratados então são enviados para o BigQuery, atualizando o banco de dados.
+- Em seguida para garantir a segurança e liberar a sessão, uma requisição POST de logout é realizada automaticamente, encerrando o processo de execução do script e finalizando a automação.
+---
 
 ### 👨‍💻 Autor
 
