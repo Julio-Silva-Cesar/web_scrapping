@@ -117,7 +117,7 @@ token = response.headers['authorization]
 
 ### 👨‍💻 Contato
 
-- **Nome:** Júlio Silva
+- **Nome:** Júlio Silva | Analista de Dados
 - **E-mail:** Para qualquer dúvida ou colaboração, sinta-se à vontade para me enviar um e-mail em: <strong><a href="mailto:juliocss044@gmail.com.br">juliocss044@gmail.com.br</a></strong>
 
 
