@@ -82,11 +82,11 @@ Uma integração com o Google Drive e Google Sheets é ativada. Ao receber uma n
 
 ### ✅ Login final e obtenção do token de seção
 
-Nesta etapa, fazemos uma requisição de login, utilizando os códigos capturados nas etapas anteriores como parâmetros:
+Nesta etapa, fazemos uma requisição de login, utilizando os códigos capturados nas etapas anteriores como parâmetros via f-string:
 1.  O **código `tmp`**.
 2.  O **código OTP**.
 3.  A requisição retorna o **token de autorização de sessão ativa**, que será utilizado para todas as interações futuras com a API do sistema.
-* O capturamos através dos headers da API, fazendo um response.headers['authorization], ação a qual exibirá o token, assim o armazenamentos em uma variável deixando-o dinâmico.
+* O capturamos através dos headers da API, fazendo um response.headers['authorization], ação a qual exibirá o token da seção, assim o armazenamos em uma variável deixando-o dinâmico.
 ```bash
 token = response.headers['authorization]
 ````
