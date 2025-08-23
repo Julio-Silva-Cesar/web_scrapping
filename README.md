@@ -118,7 +118,7 @@ token = response.headers['authorization]
 ### 👨‍💻 Contato
 
 - **Nome:** Júlio Silva
-- **Email:** juliocss044@gmail.com.br
+- **Email:** <a href="mailto:juliocss044@gmail.com.br">juliocss044@gmail.com.br</a>
 
 
 
