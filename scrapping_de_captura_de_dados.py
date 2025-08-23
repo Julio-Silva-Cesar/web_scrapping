@@ -34,8 +34,8 @@ client = gspread.authorize(credentials)
 
 # credenciais secrets sistema
 
-login    = dbutils.secrets.get(scope='JCtiflux', key='logintiflux')
-password = dbutils.secrets.get(scope='JCtiflux', key='senhatiflux')
+login    = dbutils.secrets.get(scope='JCtscope', key='loginsist')
+password = dbutils.secrets.get(scope='JCtscope', key='senhasist')
 
 #[4.1] - ***Geração de Token tmp - token de início de seção [login 01]***
 
@@ -43,7 +43,7 @@ password = dbutils.secrets.get(scope='JCtiflux', key='senhatiflux')
 
 import requests
 
-def login_tiflux(email, password):
+def login_sistema(email, password):
     headers = {
         'accept': 'application/json, text/plain, */*',
         'content-type': 'application/json',
@@ -66,7 +66,7 @@ def login_tiflux(email, password):
         return None
 
 # Chamada da função 
-response_data = login_tiflux(login, password)
+response_data = login_sistema(login, password)
 cod_tmp = response_data['otp_tmp']
 
 #[05] - ***Captura de código otp via g-mail API [login 02]***
