@@ -7,9 +7,10 @@ README do Projeto: Integração e Extração de Dados - Tiflux + Google Drive
 ## 📑 Índice
 
 - [Resumo](#-resumo)
+- [Fluxo do processo](#-Fluxo-do-Processo)
 - [Bibliotecas Necessárias](#-bibliotecas-necessárias)
-- [Integração com Google Drive](#-integração-com-google-drive)
-- [Integração com o sistema WEB - Login e Autenticação](#-integração-com-sistema---login-e-autenticação)
+- [Autenticação no Sistema WEB](#-Autenticação-no-sistema-WEB)
+- [Captura do Código OTP via Google Sheets e Apps Script](#-Captura-do-Código-OTP-via-Google-Sheets-e-Apps-Script)
 - [Captura do Código OTP](#-captura-do-código-otp)
 - [Validação da Sessão](#-validação-da-sessão)
 - [Extração de Relatórios do Sistema](#-extração-de-relatórios-do-sistema)
