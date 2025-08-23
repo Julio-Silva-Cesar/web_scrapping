@@ -62,7 +62,7 @@ flowchart TD
 
 O processo inicia com uma requisição POST para o sistema web. Nesta etapa, são capturados dois elementos cruciais:
 *  O **código temporário (`tmp`)**, um código alfanumérico necessário para a segunda parte do login.
-*  O disparo do envio de um **código OTP** (token de acesso de uso único) para o e-mail do usuário.
+*  É realizado pelo sistema o disparo automático de um **código OTP** (token de acesso de uso único) para o e-mail do usuário.
 ---
 ### 🔐 Captura do Código OTP via Google Sheets e Apps Script
 
@@ -75,8 +75,8 @@ Uma integração com o Google Drive e Google Sheets é ativada. Ao receber uma n
 ---
 ### 🛡️ Captura do Código OTP
 
-- Aguarda atualização da planilha
-- Lê o código OTP de uma célula no Google Sheets
+- Aguarda atualização da planilha.
+- Lê o código OTP de uma célula no Google Sheets via integração com o drive.
 ---
 
 ### ✅ Login Final e Obtenção do Token de Seção
