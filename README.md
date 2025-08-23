@@ -115,7 +115,7 @@ token = response.headers['authorization]
 - Em seguida para garantir a segurança e liberar a sessão, uma requisição POST de logout é realizada automaticamente, encerrando o processo de execução do script e finalizando a automação.
 ---
 
-### 👨‍💻 Autor
+### 👨‍💻 Contato
 
 - **Nome:** Júlio Silva
 - **Email:** juliocss044@gmail.com.br
