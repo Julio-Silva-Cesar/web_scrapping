@@ -88,7 +88,7 @@ Nesta etapa, fazemos uma requisição de login, utilizando os códigos capturado
 3.  A requisição retorna o **token de autorização de sessão ativa**, que será utilizado para todas as interações futuras com a API do sistema.
 * O capturamos através dos headers da API, fazendo um response.headers['authorization], ação a qual exibirá o token da seção, assim o armazenamos em uma variável deixando-o dinâmico.
 ```bash
-token = response.headers['authorization]
+token = response.headers['authorization']
 ````
 ---
 
